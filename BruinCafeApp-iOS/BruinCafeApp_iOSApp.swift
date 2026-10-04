@@ -15,8 +15,8 @@ struct BruinCafeApp_iOSApp: App {
     var body: some Scene {
         WindowGroup {
             NavigationStack {
-                // Pass the binding down to the initial view
-                LocationView(selectedLocation: $selectedLocation)
+                // Start on ContentView/HomeView so the app opens to the home screen!
+                ContentView()
             }
         }
     }
