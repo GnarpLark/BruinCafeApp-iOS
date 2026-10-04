@@ -1,23 +1,19 @@
-// xcode: set sdk=iOS
-
 //
 //  ContentView.swift
 //  BruinCafeApp-iOS
 //
-//  Created by Student on 9/29/26.
+//  Created by David on 9/29/26.
 //
 
 import SwiftUI
 
 struct ContentView: View {
+    @State private var selectedLocation: String = "Bruin Cafe HQ"
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        NavigationStack {
+            HomeView(selectedLocation: $selectedLocation)
         }
-        .padding()
     }
 }
 
