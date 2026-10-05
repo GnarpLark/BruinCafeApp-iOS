@@ -9,9 +9,33 @@ import SwiftUI
 
 struct OrderSimulationView: View {
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        VStack {
+            
+            
+            NavigationStack {
+                VStack {
+                    Text("Checkout")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                    Text("Order Summary")
+                        .font(.title)
+                        .fontWeight(.semibold)
+                        .padding(.bottom, 100)
+                        .padding(.top, 50)
+                    // Clicking this button takes the user to CheckoutView (order confirmation page)
+                    NavigationLink("Confirm Order", destination: CheckoutView())
+                        .buttonStyle(.borderedProminent)
+                        .padding(.top, 50)
+                    NavigationLink("Back to Cart", destination: CartView())
+                        .buttonStyle(.borderedProminent)
+                        .padding(.top, 50)
+                }
+                .navigationTitle("Order")
+            }
+        }
+        }
     }
-}
+
 
 #Preview {
     OrderSimulationView()
