@@ -17,6 +17,19 @@ struct ContentView: View {
     }
 }
 
-#Preview {
-    ContentView()
+// MARK: - Preview Provider
+struct ContentView_Previews: PreviewProvider {
+    struct PreviewWrapper: View {
+        @State var mockLocation: String = "Bruin Cafe HQ"
+        
+        var body: some View {
+            NavigationStack {
+                HomeView(selectedLocation: $mockLocation)
+            }
+        }
+    }
+
+    static var previews: some View {
+        PreviewWrapper()
+    }
 }

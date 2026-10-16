@@ -7,10 +7,9 @@
 
 import SwiftUI
 
-// MARK: - Location View
 struct LocationView: View {
     @Binding var selectedLocation: String
-    // Needs to be a Binding
+    @Binding var cartItems: [MenuItem: Int] // Binding to cart items
     @Environment(\.dismiss) var dismiss
 
     var body: some View {
@@ -30,53 +29,59 @@ struct LocationView: View {
 
             // MARK: - Location Option 1: HQ
             Button(action: {
-                selectedLocation = "Bruin Cafe HQ"
+                if selectedLocation != "Bruin Cafe HQ" {
+                    selectedLocation = "Bruin Cafe HQ"
+                    cartItems.removeAll() // GUARANTEED CART CLEARING
+                }
                 dismiss()
             }) {
                 VStack(spacing: 6) {
                     Text("Bruin Cafe HQ")
                         .font(.title3)
                         .bold()
-                        .foregroundColor(Color.blue)
+                        .foregroundColor(Color("BrandBlue"))
                     
                     Text("13650 Apple Harvest Dr, Martinsburg, WV 25403")
                         .font(.subheadline)
                         .multilineTextAlignment(.center)
-                        .foregroundColor(Color.blue.opacity(0.8))
+                        .foregroundColor(Color("BrandBlue").opacity(0.8))
                 }
                 .padding()
                 .frame(maxWidth: .infinity)
-                .background(Color(red: 0.75, green: 0.95, blue: 0.85))
+                .background(Color("LocationCardBackground"))
                 .cornerRadius(12)
                 .overlay(
                     RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color.blue, lineWidth: selectedLocation == "Bruin Cafe HQ" ? 2 : 0)
+                        .stroke(Color("BrandBlue"), lineWidth: selectedLocation == "Bruin Cafe HQ" ? 2 : 0)
                 )
             }
 
             // MARK: - Location Option 2: TC
             Button(action: {
-                selectedLocation = "Bruin Cafe TC"
+                if selectedLocation != "Bruin Cafe TC" {
+                    selectedLocation = "Bruin Cafe TC"
+                    cartItems.removeAll() // GUARANTEED CART CLEARING
+                }
                 dismiss()
             }) {
                 VStack(spacing: 6) {
                     Text("Bruin Cafe TC")
                         .font(.title3)
                         .bold()
-                        .foregroundColor(Color.blue)
+                        .foregroundColor(Color("BrandBlue"))
                     
                     Text("5550 Winchester Ave, Martinsburg, WV 25405")
                         .font(.subheadline)
                         .multilineTextAlignment(.center)
-                        .foregroundColor(Color.blue.opacity(0.8))
+                        .foregroundColor(Color("BrandBlue").opacity(0.8))
                 }
                 .padding()
                 .frame(maxWidth: .infinity)
-                .background(Color(red: 0.75, green: 0.95, blue: 0.85))
+                .background(Color("LocationCardBackground"))
                 .cornerRadius(12)
                 .overlay(
                     RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color.blue, lineWidth: selectedLocation == "Bruin Cafe TC" ? 2 : 0)
+                        .stroke(Color("BrandBlue"), lineWidth: selectedLocation == "Bruin Cafe TC" ? 2 : 0)
                 )
             }
 
@@ -97,19 +102,18 @@ struct LocationView: View {
             .padding(.bottom, 10)
         }
         .padding(.horizontal)
-        .background(Color(red: 0.96, green: 0.95, blue: 0.91).ignoresSafeArea())
+        .background(Color("AppBackground").ignoresSafeArea())
         .navigationBarTitleDisplayMode(.inline)
-        
     }
 }
 
-// MARK: - Preview Provider
 struct LocationView_Previews: PreviewProvider {
     struct PreviewWrapper: View {
-        @State var mockLocation = "Bruin Cafe HQ" // Need @State for preview binding
+        @State var mockLocation = "Bruin Cafe HQ"
+        @State var mockCart: [MenuItem: Int] = [:]
         var body: some View {
             NavigationStack {
-                LocationView(selectedLocation: $mockLocation)
+                LocationView(selectedLocation: $mockLocation, cartItems: $mockCart)
             }
         }
     }
