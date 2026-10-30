@@ -52,7 +52,7 @@ struct OrderHistoryView: View {
                         .padding(.horizontal, 16)
                         .padding(.vertical, 8)
                         .background(Color.gray)
-                        .foregroundColor(Color("BrandBlue"))
+                        .foregroundColor(Color(.white))
                         .cornerRadius(8)
                 }
                 
@@ -63,7 +63,7 @@ struct OrderHistoryView: View {
                         .font(.headline)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 8)
-                        .background(Color("BrandOrange"))
+                        .background(Color("BrandRed"))
                         .foregroundColor(.white)
                         .cornerRadius(8)
                 }
@@ -133,7 +133,7 @@ struct OrderHistoryView: View {
                                         .bold()
                                         .padding(.horizontal, 12)
                                         .padding(.vertical, 6)
-                                        .background(Color("BrandOrange"))
+                                        .background(Color("BrandRed"))
                                         .foregroundColor(.white)
                                         .cornerRadius(6)
                                 }
@@ -154,7 +154,7 @@ struct OrderHistoryView: View {
                 NavigationLink(destination: HomeView(selectedLocation: $selectedLocation)) {
                     Text("Home")
                         .font(.system(size: 13, weight: .bold))
-                        .foregroundColor(Color("BrandGreen"))
+                        .foregroundColor(Color("BrandBlue"))
                         .lineLimit(1)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 14)
@@ -174,7 +174,7 @@ struct OrderHistoryView: View {
                 NavigationLink(destination: OrderHistoryView(selectedLocation: $selectedLocation, cartItems: $cartItems, globalStock: $globalStock)) {
                     Text("Order History")
                         .font(.system(size: 11, weight: .bold))
-                        .foregroundColor(Color("BrandBlue"))
+                        .foregroundColor(Color(.black))
                         .lineLimit(1)
                         .minimumScaleFactor(0.5)
                         .frame(maxWidth: .infinity)

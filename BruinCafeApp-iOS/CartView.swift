@@ -23,7 +23,7 @@ struct CartView: View {
                         .padding(.horizontal, 16)
                         .padding(.vertical, 8)
                         .background(Color.gray)
-                        .foregroundColor(Color("BrandBlue"))
+                        .foregroundColor(Color(.white))
                         .cornerRadius(8)
                 }
                 
@@ -57,7 +57,7 @@ struct CartView: View {
             Text("⚠️ Note: Changing your location will empty your cart.")
                 .font(.caption)
                 .bold()
-                .foregroundColor(Color("BrandOrange"))
+                .foregroundColor(Color("BrandRed"))
                 .padding(.horizontal)
 
             if cartItems.isEmpty {
@@ -116,8 +116,8 @@ struct CartView: View {
                         .font(.headline)
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(Color("LocationCardBackground"))
-                        .foregroundColor(Color("BrandBlue"))
+                        .background(Color(.gray))
+                        .foregroundColor(Color(.white))
                         .cornerRadius(10)
                 }
             }

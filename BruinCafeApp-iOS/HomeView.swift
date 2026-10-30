@@ -45,7 +45,7 @@ struct HomeView: View {
                     .resizable()
                     .scaledToFit()
                     .frame(height: 38)
-                    .padding(.horizontal, 6)
+                    .padding(.horizontal, 4)
                     .padding(.vertical, 4)
 
                 Spacer()
@@ -56,7 +56,7 @@ struct HomeView: View {
                         .font(.caption)
                         .bold()
                         .padding(.horizontal, 10)
-                        .padding(.vertical, 8)
+                        .padding(.vertical, 11)
                         .background(Color("BrandBlue"))
                         .foregroundColor(.white)
                         .cornerRadius(6)
@@ -68,7 +68,7 @@ struct HomeView: View {
                         .padding(.horizontal, 14)
                         .padding(.vertical, 8)
                         .background(Color.gray)
-                        .foregroundColor(Color("BrandBlue"))
+                        .foregroundColor(Color(.white))
                         .cornerRadius(6)
                 }
 
@@ -77,7 +77,7 @@ struct HomeView: View {
                         .font(.headline)
                         .padding(.horizontal, 14)
                         .padding(.vertical, 8)
-                        .background(Color("BrandOrange"))
+                        .background(Color("BrandRed"))
                         .foregroundColor(.white)
                         .cornerRadius(6)
                 }
@@ -118,7 +118,7 @@ struct HomeView: View {
             }
             .padding()
             .frame(maxWidth: .infinity)
-            .background(Color("LocationCardBackground"))
+            .background(Color("CardBackground"))
             .cornerRadius(12)
             .padding(.horizontal)
 
@@ -134,7 +134,7 @@ struct HomeView: View {
                 .foregroundColor(Color("BrandBlue"))
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(Color("LocationCardBackground"))
+                .background(Color("CardBackground"))
                 .cornerRadius(12)
             }
             .padding(.horizontal)
@@ -146,7 +146,7 @@ struct HomeView: View {
                     .foregroundColor(Color("BrandBlue"))
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(Color("LocationCardBackground"))
+                    .background(Color("CardBackground"))
                     .cornerRadius(12)
             }
             .padding(.horizontal)
@@ -158,7 +158,7 @@ struct HomeView: View {
                     .foregroundColor(Color("BrandBlue"))
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(Color("LocationCardBackground"))
+                    .background(Color("CardBackground"))
                     .cornerRadius(12)
             }
             .padding(.horizontal)
@@ -170,7 +170,7 @@ struct HomeView: View {
                 Button(action: {}) {
                     Text("Home")
                         .font(.system(size: 13, weight: .bold))
-                        .foregroundColor(Color("BrandGreen"))
+                        .foregroundColor(Color(.black))
                         .lineLimit(1)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 14)
@@ -182,7 +182,7 @@ struct HomeView: View {
                 }) {
                     Text("News")
                         .font(.system(size: 13, weight: .bold))
-                        .foregroundColor(Color("BrandBlue"))
+                        .foregroundColor(Color(.white))
                         .lineLimit(1)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 14)
@@ -192,7 +192,7 @@ struct HomeView: View {
                 NavigationLink(destination: OrderHistoryView(selectedLocation: $selectedLocation, cartItems: $cartItems, globalStock: $globalStock)) {
                     Text("Order History")
                         .font(.system(size: 11, weight: .bold))
-                        .foregroundColor(Color("BrandBlue"))
+                        .foregroundColor(Color(.white))
                         .lineLimit(1)
                         .minimumScaleFactor(0.5)
                         .frame(maxWidth: .infinity)

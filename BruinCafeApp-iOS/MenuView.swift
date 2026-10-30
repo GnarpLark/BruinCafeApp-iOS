@@ -55,7 +55,7 @@ struct MenuView: View {
                         .padding(.horizontal, 16)
                         .padding(.vertical, 8)
                         .background(Color.gray)
-                        .foregroundColor(Color("BrandBlue"))
+                        .foregroundColor(Color(.white))
                         .cornerRadius(8)
                 }
                  
@@ -66,7 +66,7 @@ struct MenuView: View {
                         .font(.headline)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 8)
-                        .background(Color("BrandOrange"))
+                        .background(Color("BrandRed"))
                         .foregroundColor(.white)
                         .cornerRadius(8)
                 }
@@ -91,7 +91,7 @@ struct MenuView: View {
                             ZStack {
                                 Color.gray
                                 Text("Image")
-                                    .foregroundColor(Color("BrandPurple"))
+                                    .foregroundColor(Color("BrandBlue"))
                                     .bold()
                             }
                             .frame(width: 80, height: 80)
@@ -129,7 +129,7 @@ struct MenuView: View {
                                     .bold()
                                     .padding(8)
                                     .frame(minWidth: 80)
-                                    .background(availableStock <= 0 ? Color.gray : Color("BrandOrange"))
+                                    .background(availableStock <= 0 ? Color.gray : Color("BrandRed"))
                                     .foregroundColor(.white)
                                     .cornerRadius(6)
                             }

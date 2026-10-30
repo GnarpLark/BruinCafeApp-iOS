@@ -32,7 +32,7 @@ struct OrderSimulationView: View {
                 Text("💡 Note: To remove an item or change quantities, please go back to your Cart.")
                     .font(.caption)
                     .bold()
-                    .foregroundColor(Color("BrandOrange"))
+                    .foregroundColor(Color("BrandRed"))
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
 

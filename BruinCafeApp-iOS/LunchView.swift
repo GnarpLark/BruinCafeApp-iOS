@@ -66,7 +66,7 @@ struct LunchView: View {
                         .padding(.horizontal, 16)
                         .padding(.vertical, 8)
                         .background(Color.gray)
-                        .foregroundColor(Color("BrandBlue"))
+                        .foregroundColor(Color(.white))
                         .cornerRadius(8)
                 }
                  
@@ -77,7 +77,7 @@ struct LunchView: View {
                         .font(.headline)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 8)
-                        .background(Color("BrandOrange"))
+                        .background(Color("BrandRed"))
                         .foregroundColor(.white)
                         .cornerRadius(8)
                 }
@@ -104,7 +104,7 @@ struct LunchView: View {
                         Text("Featured Lunch Item")
                             .font(.title2)
                             .bold()
-                            .foregroundColor(Color("BrandOrange"))
+                            .foregroundColor(Color("BrandRed"))
 
                         VStack(alignment: .leading, spacing: 6) {
                             Text(todayMenu.day + " - " + todayMenu.lunchTitle)
@@ -140,7 +140,7 @@ struct LunchView: View {
                                         .font(.caption)
                                         .bold()
                                         .padding(8)
-                                        .background(availableStock <= 0 ? Color.gray : Color("BrandOrange"))
+                                        .background(availableStock <= 0 ? Color.gray : Color("BrandRed"))
                                         .foregroundColor(.white)
                                         .cornerRadius(6)
                                 }

@@ -37,7 +37,7 @@ struct CartItemCard: View {
                 Text(itemPrice)
                     .font(.subheadline)
                     .bold()
-                    .foregroundColor(Color("BrandGreen"))
+                    .foregroundColor(Color("BrandBlue"))
             }
 
             Spacer()
@@ -63,7 +63,7 @@ struct CartItemCard: View {
                             .font(.headline)
                             .bold()
                             .frame(width: 28, height: 28)
-                            .background(Color("BrandOrange"))
+                            .background(Color("BrandGreen"))
                             .foregroundColor(.white)
                             .cornerRadius(6)
                     }
