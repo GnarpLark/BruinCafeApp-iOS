@@ -11,6 +11,9 @@ struct MenuView: View {
     @Binding var selectedLocation: String
     @Binding var cartItems: [MenuItem: Int]
     @Binding var globalStock: [String: Int]
+    @Binding var rewardPunches: Int
+    @Binding var completedOrders: [PastOrder]
+
     @State private var showingLocationSheet = false
     @Environment(\.dismiss) var dismiss
 
@@ -19,20 +22,23 @@ struct MenuView: View {
     @State private var addedItemName = ""
     @State private var showingNewsAlert = false
 
+    init(
+        selectedLocation: Binding<String>,
+        cartItems: Binding<[MenuItem: Int]>,
+        globalStock: Binding<[String: Int]>,
+        rewardPunches: Binding<Int> = .constant(1),
+        completedOrders: Binding<[PastOrder]> = .constant([])
+    ) {
+        self._selectedLocation = selectedLocation
+        self._cartItems = cartItems
+        self._globalStock = globalStock
+        self._rewardPunches = rewardPunches
+        self._completedOrders = completedOrders
+    }
+
+    // Centralized single source of truth from InventoryView
     var menuItems: [MenuItem] {
-        if selectedLocation == "Bruin Cafe TC" {
-            return [
-                MenuItem(name: "Tech Center Special Roast", description: "Fresh drip coffee with caramel", price: "$3.50", stockQuantity: 10),
-                MenuItem(name: "Bruin Bagel", description: "Everything bagel with cream cheese", price: "$4.00", stockQuantity: 5),
-                MenuItem(name: "Energy Smoothie", description: "Strawberry banana protein blend", price: "$5.50", stockQuantity: 3)
-            ]
-        } else {
-            return [
-                MenuItem(name: "HQ Signature Espresso", description: "Double shot dark roast espresso", price: "$3.00", stockQuantity: 12),
-                MenuItem(name: "Breakfast Burrito", description: "Eggs, bacon, cheddar, salsa", price: "$6.50", stockQuantity: 8),
-                MenuItem(name: "Iced Caramel Macchiato", description: "Espresso with vanilla and caramel", price: "$4.75", stockQuantity: 6)
-            ]
-        }
+        InventoryView.cafeItems(for: selectedLocation)
     }
 
     var body: some View {
@@ -61,7 +67,13 @@ struct MenuView: View {
                  
                 Spacer()
                  
-                NavigationLink(destination: CartView(selectedLocation: $selectedLocation, cartItems: $cartItems, globalStock: $globalStock)) {
+                NavigationLink(destination: CartView(
+                    selectedLocation: $selectedLocation,
+                    cartItems: $cartItems,
+                    globalStock: $globalStock,
+                    rewardPunches: $rewardPunches,
+                    completedOrders: $completedOrders
+                )) {
                     Text("Cart (\(cartItems.values.reduce(0, +)))")
                         .font(.headline)
                         .padding(.horizontal, 16)
@@ -80,23 +92,13 @@ struct MenuView: View {
                 .font(.title2)
                 .bold()
                 .foregroundColor(Color("BrandBlue"))
-                .padding(.top, 5)
 
             ScrollView {
                 VStack(spacing: 15) {
                     ForEach(menuItems) { item in
                         let availableStock = globalStock[item.name] ?? item.stockQuantity
-                         
-                        HStack {
-                            ZStack {
-                                Color.gray
-                                Text("Image")
-                                    .foregroundColor(Color("BrandBlue"))
-                                    .bold()
-                            }
-                            .frame(width: 80, height: 80)
-                            .cornerRadius(8)
 
+                        HStack {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(item.name)
                                     .font(.headline)
@@ -147,7 +149,12 @@ struct MenuView: View {
 
             // Universal Bottom Navigation Bar
             HStack(spacing: 8) {
-                NavigationLink(destination: HomeView(selectedLocation: $selectedLocation)) {
+                NavigationLink(destination: HomeView(
+                    selectedLocation: $selectedLocation,
+                    globalStock: $globalStock,
+                    rewardPunches: $rewardPunches,
+                    completedOrders: $completedOrders
+                )) {
                     Text("Home")
                         .font(.system(size: 13, weight: .bold))
                         .foregroundColor(Color("BrandGreen"))
@@ -169,7 +176,13 @@ struct MenuView: View {
                         .background(Color.gray)
                 }
 
-                NavigationLink(destination: OrderHistoryView(selectedLocation: $selectedLocation, cartItems: $cartItems, globalStock: $globalStock)) {
+                NavigationLink(destination: OrderHistoryView(
+                    selectedLocation: $selectedLocation,
+                    cartItems: $cartItems,
+                    globalStock: $globalStock,
+                    rewardPunches: $rewardPunches,
+                    completedOrders: $completedOrders
+                )) {
                     Text("Order History")
                         .font(.system(size: 11, weight: .bold))
                         .foregroundColor(Color("BrandBlue"))
@@ -202,10 +215,18 @@ struct MenuView_Previews: PreviewProvider {
     struct PreviewWrapper: View {
         @State var mockLocation = "Bruin Cafe HQ"
         @State var mockCart: [MenuItem: Int] = [:]
-        @State var mockStock: [String: Int] = ["HQ Signature Espresso": 12]
+        @State var mockStock: [String: Int] = InventoryView.defaultInitialStock
+        @State var mockPunches = 1
+        @State var mockOrders: [PastOrder] = []
         var body: some View {
             NavigationStack {
-                MenuView(selectedLocation: $mockLocation, cartItems: $mockCart, globalStock: $mockStock)
+                MenuView(
+                    selectedLocation: $mockLocation,
+                    cartItems: $mockCart,
+                    globalStock: $mockStock,
+                    rewardPunches: $mockPunches,
+                    completedOrders: $mockOrders
+                )
             }
         }
     }

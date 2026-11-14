@@ -2,34 +2,45 @@
 //  ContentView.swift
 //  BruinCafeApp-iOS
 //
-//  Created by David on 9/29/26.
+//  Created by David on 9/30/26.
 //
 
 import SwiftUI
 
+/// App Root View
+///
+/// Holds the primary `@State` properties for the application and injects persistent
+/// initial states from `OrderStore` (reward punches and order history) into `HomeView`.
 struct ContentView: View {
+    // MARK: - Root State Properties
+    /// Currently selected campus cafe location (defaults to HQ).
     @State private var selectedLocation: String = "Bruin Cafe HQ"
+    
+    /// Global inventory stock counts across all locations, initialized from the central definition in `InventoryView`.
+    @State private var globalStock: [String: Int] = InventoryView.defaultInitialStock
+    
+    /// User's current loyalty punch card progress, restored from persistent storage.
+    @State private var rewardPunches: Int = OrderStore.shared.loadPunches()
+    
+    /// Stored history of completed transactions, restored from local storage.
+    @State private var completedOrders: [PastOrder] = OrderStore.shared.loadOrders()
 
+    // MARK: - View Body
     var body: some View {
         NavigationStack {
-            HomeView(selectedLocation: $selectedLocation)
+            HomeView(
+                selectedLocation: $selectedLocation,
+                globalStock: $globalStock,
+                rewardPunches: $rewardPunches,
+                completedOrders: $completedOrders
+            )
         }
     }
 }
 
 // MARK: - Preview Provider
 struct ContentView_Previews: PreviewProvider {
-    struct PreviewWrapper: View {
-        @State var mockLocation: String = "Bruin Cafe HQ"
-        
-        var body: some View {
-            NavigationStack {
-                HomeView(selectedLocation: $mockLocation)
-            }
-        }
-    }
-
     static var previews: some View {
-        PreviewWrapper()
+        ContentView()
     }
 }

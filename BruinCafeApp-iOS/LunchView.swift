@@ -19,6 +19,9 @@ struct LunchView: View {
     @Binding var selectedLocation: String
     @Binding var cartItems: [MenuItem: Int]
     @Binding var globalStock: [String: Int]
+    @Binding var rewardPunches: Int
+    @Binding var completedOrders: [PastOrder]
+
     @State private var showingLocationSheet = false
 
     // Alert states
@@ -26,27 +29,34 @@ struct LunchView: View {
     @State private var addedItemName = ""
     @State private var showingNewsAlert = false
 
+    init(
+        selectedLocation: Binding<String>,
+        cartItems: Binding<[MenuItem: Int]>,
+        globalStock: Binding<[String: Int]>,
+        rewardPunches: Binding<Int> = .constant(1),
+        completedOrders: Binding<[PastOrder]> = .constant([])
+    ) {
+        self._selectedLocation = selectedLocation
+        self._cartItems = cartItems
+        self._globalStock = globalStock
+        self._rewardPunches = rewardPunches
+        self._completedOrders = completedOrders
+    }
+
     var currentDayString: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "EEEE"
         return formatter.string(from: Date())
     }
 
-    let hqMenus = [
-        DailyMenu(day: "Monday", lunchTitle: "Hearty Beef Broth Bowl", lunchDescription: "Savory beef broth filled with tender beef and hearty ingredients.", price: "$6.00"),
-        DailyMenu(day: "Tuesday", lunchTitle: "Chicken Salad Wraps & Chips", lunchDescription: "Tender chicken in creamy dressing wrapped in a flour tortilla with chips.", price: "$6.50"),
-        DailyMenu(day: "Wednesday", lunchTitle: "Guinness Beef Stew", lunchDescription: "Slow-simmered beef in rich Guinness stout gravy with vegetables.", price: "$7.00"),
-        DailyMenu(day: "Thursday", lunchTitle: "Crispy Fried Chicken Sandwich & Waffle Fries", lunchDescription: "Golden crispy fried chicken on a toasted bun with waffle fries.", price: "$7.50"),
-        DailyMenu(day: "Friday", lunchTitle: "Made-to-Order Flatbreads", lunchDescription: "Custom flatbread with fresh toppings, sauces, and melted cheeses.", price: "$8.00")
-    ]
+    // Centralized single source of truth from InventoryView
+    var hqMenus: [DailyMenu] {
+        InventoryView.lunchDailyMenus(for: "Bruin Cafe HQ")
+    }
 
-    let tcMenus = [
-        DailyMenu(day: "Monday", lunchTitle: "BBQ Chicken with Mac & Cheese", lunchDescription: "Grilled chicken in smoky BBQ sauce with velvety mac & cheese and coleslaw.", price: "$7.00"),
-        DailyMenu(day: "Tuesday", lunchTitle: "Shrimp Fried Rice with Egg Roll", lunchDescription: "Grilled shrimp over stir-fried rice with a vegetable egg roll.", price: "$7.50"),
-        DailyMenu(day: "Wednesday", lunchTitle: "Pepperoni Pizza Flatbread", lunchDescription: "Flatbread filled with pepperoni and mozzarella with garlic butter.", price: "$6.50"),
-        DailyMenu(day: "Thursday", lunchTitle: "Beef Stroganoff over Egg Noodles", lunchDescription: "Beef with onions and mushrooms in a rich sour cream mushroom sauce.", price: "$7.25"),
-        DailyMenu(day: "Friday", lunchTitle: "Hot Ham & Cheese with Potato Soup", lunchDescription: "Sliced ham and cheddar on a croissant with warm potato soup.", price: "$6.75")
-    ]
+    var tcMenus: [DailyMenu] {
+        InventoryView.lunchDailyMenus(for: "Bruin Cafe TC")
+    }
 
     var todayMenu: DailyMenu {
         let menus = (selectedLocation == "Bruin Cafe TC") ? tcMenus : hqMenus
@@ -72,7 +82,13 @@ struct LunchView: View {
                  
                 Spacer()
                  
-                NavigationLink(destination: CartView(selectedLocation: $selectedLocation, cartItems: $cartItems, globalStock: $globalStock)) {
+                NavigationLink(destination: CartView(
+                    selectedLocation: $selectedLocation,
+                    cartItems: $cartItems,
+                    globalStock: $globalStock,
+                    rewardPunches: $rewardPunches,
+                    completedOrders: $completedOrders
+                )) {
                     Text("Cart (\(cartItems.values.reduce(0, +)))")
                         .font(.headline)
                         .padding(.horizontal, 16)
@@ -94,63 +110,109 @@ struct LunchView: View {
                             .font(.title)
                             .bold()
                             .foregroundColor(Color("BrandBlue"))
-                        Text("Today is \(currentDayString)")
+                            .multilineTextAlignment(.center)
+
+                        Text("Serving hours: 11:00 AM - 1:30 PM")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                     }
                     .padding(.top)
 
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text("Featured Lunch Item")
+                    // Daily Special Card
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            Text(todayMenu.day.uppercased())
+                                .font(.caption)
+                                .bold()
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(Color("BrandOrange"))
+                                .foregroundColor(.white)
+                                .cornerRadius(4)
+
+                            Spacer()
+
+                            Text(todayMenu.price)
+                                .font(.title3)
+                                .bold()
+                                .foregroundColor(Color("BrandGreen"))
+                        }
+
+                        Text(todayMenu.lunchTitle)
                             .font(.title2)
                             .bold()
-                            .foregroundColor(Color("BrandRed"))
+                            .foregroundColor(.primary)
 
-                        VStack(alignment: .leading, spacing: 6) {
-                            Text(todayMenu.day + " - " + todayMenu.lunchTitle)
-                                .font(.headline)
-                                .foregroundColor(Color("BrandBlue"))
-                            Text(todayMenu.lunchDescription)
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                            
+                        Text(todayMenu.lunchDescription)
+                            .font(.body)
+                            .foregroundColor(.secondary)
+
+                        HStack {
+                            Text("In Stock: \(availableStock)")
+                                .font(.subheadline)
+                                .bold()
+                                .foregroundColor(availableStock > 0 ? Color("BrandGreen") : .red)
+
+                            Spacer()
+
+                            Button(action: {
+                                if availableStock > 0 {
+                                    globalStock[lunchMenuItem.name] = availableStock - 1
+                                    cartItems[lunchMenuItem, default: 0] += 1
+                                    addedItemName = lunchMenuItem.name
+                                    showingAddedAlert = true
+                                }
+                            }) {
+                                Text(availableStock <= 0 ? "Sold Out" : "Add to Cart")
+                                    .font(.headline)
+                                    .padding(.horizontal, 20)
+                                    .padding(.vertical, 10)
+                                    .background(availableStock <= 0 ? Color.gray : Color("BrandOrange"))
+                                    .foregroundColor(.white)
+                                    .cornerRadius(8)
+                            }
+                            .disabled(availableStock <= 0)
+                        }
+                    }
+                    .padding()
+                    .background(Color("CardBackground"))
+                    .cornerRadius(12)
+                    .padding(.horizontal)
+
+                    // Weekly Schedule View
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("Weekly Specials Schedule")
+                            .font(.headline)
+                            .foregroundColor(Color("BrandBlue"))
+                            .padding(.horizontal)
+
+                        let weeklyList = (selectedLocation == "Bruin Cafe TC") ? tcMenus : hqMenus
+
+                        ForEach(weeklyList) { item in
                             HStack {
                                 VStack(alignment: .leading, spacing: 2) {
-                                    Text(todayMenu.price)
+                                    Text(item.day)
                                         .font(.subheadline)
                                         .bold()
-                                        .foregroundColor(Color("BrandGreen"))
-                                    Text("In Stock: \(availableStock)")
-                                        .font(.footnote)
-                                        .bold()
-                                        .foregroundColor(availableStock > 0 ? Color("BrandGreen") : .red)
+                                        .foregroundColor(Color("BrandOrange"))
+                                    Text(item.lunchTitle)
+                                        .font(.body)
+                                        .foregroundColor(.primary)
                                 }
-                                
                                 Spacer()
-                                
-                                Button(action: {
-                                    if availableStock > 0 {
-                                        globalStock[lunchMenuItem.name] = availableStock - 1
-                                        cartItems[lunchMenuItem, default: 0] += 1
-                                        addedItemName = lunchMenuItem.name
-                                        showingAddedAlert = true
-                                    }
-                                }) {
-                                    Text(availableStock <= 0 ? "Sold Out" : "Add to Cart")
-                                        .font(.caption)
-                                        .bold()
-                                        .padding(8)
-                                        .background(availableStock <= 0 ? Color.gray : Color("BrandRed"))
-                                        .foregroundColor(.white)
-                                        .cornerRadius(6)
-                                }
-                                .disabled(availableStock <= 0)
+                                Text(item.price)
+                                    .font(.subheadline)
+                                    .bold()
+                                    .foregroundColor(Color("BrandGreen"))
                             }
+                            .padding(.vertical, 6)
+                            Divider()
                         }
-                        .padding()
-                        .background(Color("CardBackground"))
-                        .cornerRadius(10)
+                        .padding(.horizontal)
                     }
+                    .padding()
+                    .background(Color("CardBackground"))
+                    .cornerRadius(10)
                     .padding(.horizontal)
                 }
             }
@@ -159,7 +221,12 @@ struct LunchView: View {
 
             // Universal Bottom Navigation Bar
             HStack(spacing: 8) {
-                NavigationLink(destination: HomeView(selectedLocation: $selectedLocation)) {
+                NavigationLink(destination: HomeView(
+                    selectedLocation: $selectedLocation,
+                    globalStock: $globalStock,
+                    rewardPunches: $rewardPunches,
+                    completedOrders: $completedOrders
+                )) {
                     Text("Home")
                         .font(.system(size: 13, weight: .bold))
                         .foregroundColor(Color("BrandGreen"))
@@ -181,7 +248,13 @@ struct LunchView: View {
                         .background(Color.gray)
                 }
 
-                NavigationLink(destination: OrderHistoryView(selectedLocation: $selectedLocation, cartItems: $cartItems, globalStock: $globalStock)) {
+                NavigationLink(destination: OrderHistoryView(
+                    selectedLocation: $selectedLocation,
+                    cartItems: $cartItems,
+                    globalStock: $globalStock,
+                    rewardPunches: $rewardPunches,
+                    completedOrders: $completedOrders
+                )) {
                     Text("Order History")
                         .font(.system(size: 11, weight: .bold))
                         .foregroundColor(Color("BrandBlue"))
@@ -215,10 +288,18 @@ struct LunchView_Previews: PreviewProvider {
     struct PreviewWrapper: View {
         @State var mockLocation = "Bruin Cafe HQ"
         @State var mockCart: [MenuItem: Int] = [:]
-        @State var mockStock: [String: Int] = ["Hearty Beef Broth Bowl": 10]
+        @State var mockStock: [String: Int] = InventoryView.defaultInitialStock
+        @State var mockPunches = 1
+        @State var mockOrders: [PastOrder] = []
         var body: some View {
             NavigationStack {
-                LunchView(selectedLocation: $mockLocation, cartItems: $mockCart, globalStock: $mockStock)
+                LunchView(
+                    selectedLocation: $mockLocation,
+                    cartItems: $mockCart,
+                    globalStock: $mockStock,
+                    rewardPunches: $mockPunches,
+                    completedOrders: $mockOrders
+                )
             }
         }
     }

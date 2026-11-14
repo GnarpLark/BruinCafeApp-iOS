@@ -11,6 +11,9 @@ struct HolidayView: View {
     @Binding var selectedLocation: String
     @Binding var cartItems: [MenuItem: Int]
     @Binding var globalStock: [String: Int]
+    @Binding var rewardPunches: Int
+    @Binding var completedOrders: [PastOrder]
+
     @State private var showingLocationSheet = false
 
     // Alert states
@@ -18,12 +21,24 @@ struct HolidayView: View {
     @State private var addedItemName = ""
     @State private var showingNewsAlert = false
 
-    let holidayItems = [
-        MenuItem(name: "Pumpkin Spice Harvest Latte", description: "Espresso with steamed milk, pumpkin puree, and autumn spice blend.", price: "$4.75", stockQuantity: 15),
-        MenuItem(name: "Maple Pecan Cranberry Muffin", description: "Freshly baked seasonal muffin topped with candied pecans.", price: "$3.25", stockQuantity: 10),
-        MenuItem(name: "Spiced Apple Cider Warm-Up", description: "Slow-simmered spiced apple cider with a cinnamon stick.", price: "$3.00", stockQuantity: 12),
-        MenuItem(name: "Turkey Cranberry Festive Panini", description: "Roasted turkey, cranberry chutney, and provolone on sourdough.", price: "$7.50", stockQuantity: 8)
-    ]
+    init(
+        selectedLocation: Binding<String>,
+        cartItems: Binding<[MenuItem: Int]>,
+        globalStock: Binding<[String: Int]>,
+        rewardPunches: Binding<Int> = .constant(1),
+        completedOrders: Binding<[PastOrder]> = .constant([])
+    ) {
+        self._selectedLocation = selectedLocation
+        self._cartItems = cartItems
+        self._globalStock = globalStock
+        self._rewardPunches = rewardPunches
+        self._completedOrders = completedOrders
+    }
+
+    // Centralized dummy data from InventoryView
+    var holidayItems: [MenuItem] {
+        InventoryView.holidayItems
+    }
 
     var body: some View {
         VStack(spacing: 12) {
@@ -41,7 +56,13 @@ struct HolidayView: View {
                  
                 Spacer()
                  
-                NavigationLink(destination: CartView(selectedLocation: $selectedLocation, cartItems: $cartItems, globalStock: $globalStock)) {
+                NavigationLink(destination: CartView(
+                    selectedLocation: $selectedLocation,
+                    cartItems: $cartItems,
+                    globalStock: $globalStock,
+                    rewardPunches: $rewardPunches,
+                    completedOrders: $completedOrders
+                )) {
                     Text("Cart (\(cartItems.values.reduce(0, +)))")
                         .font(.headline)
                         .padding(.horizontal, 16)
@@ -78,7 +99,6 @@ struct HolidayView: View {
                                 Text(item.price)
                                     .font(.subheadline)
                                     .bold()
-                                    .foregroundColor(Color("BrandGreen"))
 
                                 Text("In Stock: \(availableStock)")
                                     .font(.footnote)
@@ -110,16 +130,21 @@ struct HolidayView: View {
                         .padding()
                         .background(Color("CardBackground"))
                         .cornerRadius(10)
-                        .padding(.horizontal)
                     }
                 }
+                .padding(.horizontal)
             }
 
             Spacer()
 
             // Universal Bottom Navigation Bar
             HStack(spacing: 8) {
-                NavigationLink(destination: HomeView(selectedLocation: $selectedLocation)) {
+                NavigationLink(destination: HomeView(
+                    selectedLocation: $selectedLocation,
+                    globalStock: $globalStock,
+                    rewardPunches: $rewardPunches,
+                    completedOrders: $completedOrders
+                )) {
                     Text("Home")
                         .font(.system(size: 13, weight: .bold))
                         .foregroundColor(Color("BrandGreen"))
@@ -141,7 +166,13 @@ struct HolidayView: View {
                         .background(Color.gray)
                 }
 
-                NavigationLink(destination: OrderHistoryView(selectedLocation: $selectedLocation, cartItems: $cartItems, globalStock: $globalStock)) {
+                NavigationLink(destination: OrderHistoryView(
+                    selectedLocation: $selectedLocation,
+                    cartItems: $cartItems,
+                    globalStock: $globalStock,
+                    rewardPunches: $rewardPunches,
+                    completedOrders: $completedOrders
+                )) {
                     Text("Order History")
                         .font(.system(size: 11, weight: .bold))
                         .foregroundColor(Color("BrandBlue"))
@@ -175,10 +206,18 @@ struct HolidayView_Previews: PreviewProvider {
     struct PreviewWrapper: View {
         @State var mockLocation = "Bruin Cafe HQ"
         @State var mockCart: [MenuItem: Int] = [:]
-        @State var mockStock: [String: Int] = ["Pumpkin Spice Harvest Latte": 15]
+        @State var mockStock: [String: Int] = InventoryView.defaultInitialStock
+        @State var mockPunches = 1
+        @State var mockOrders: [PastOrder] = []
         var body: some View {
             NavigationStack {
-                HolidayView(selectedLocation: $mockLocation, cartItems: $mockCart, globalStock: $mockStock)
+                HolidayView(
+                    selectedLocation: $mockLocation,
+                    cartItems: $mockCart,
+                    globalStock: $mockStock,
+                    rewardPunches: $mockPunches,
+                    completedOrders: $mockOrders
+                )
             }
         }
     }
