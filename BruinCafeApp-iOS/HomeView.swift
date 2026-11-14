@@ -121,7 +121,7 @@ struct HomeView: View {
 
                     // Free lunch status badge unlocked at 10 punches
                     if rewardPunches >= 10 {
-                        Text("🎉 FREE LUNCH UNLOCKED!")
+                        Text("FREE LUNCH UNLOCKED!")
                             .font(.caption)
                             .bold()
                             .padding(.horizontal, 8)
@@ -286,10 +286,10 @@ struct HomeView: View {
         }
         .background(Color("AppBackground").ignoresSafeArea())
         .navigationBarHidden(true)
-        .alert("News Update", isPresented: $showingNewsAlert) {
+        .alert("News", isPresented: $showingNewsAlert) {
             Button("Dismiss", role: .cancel) { }
         } message: {
-            Text("Thanksgiving Holiday Hours: Both Bruin Cafe HQ and Tech Center will close at 1:00 PM on Wednesday, Nov 26th, and remain closed Thursday and Friday. Have a safe and happy Thanksgiving!")
+            Text("News is currently unavailable")
         }
     }
 }

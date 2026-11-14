@@ -201,21 +201,21 @@ struct InventoryView: View {
                     
                     // SECTION 1: Cafe Items (Synced for selected location)
                     StockSectionView(
-                        title: "☕ Cafe Items (\(selectedLocation == "Bruin Cafe TC" ? "TC" : "HQ"))",
+                        title: "Cafe Items (\(selectedLocation == "Bruin Cafe TC" ? "TC" : "HQ"))",
                         items: cafeItemsList,
                         globalStock: $globalStock
                     )
 
                     // SECTION 2: Lunch & Breakfast (Synced for selected location)
                     StockSectionView(
-                        title: "🍳 Lunch & Breakfast (\(selectedLocation == "Bruin Cafe TC" ? "TC" : "HQ"))",
+                        title: "Lunch & Breakfast (\(selectedLocation == "Bruin Cafe TC" ? "TC" : "HQ"))",
                         items: lunchItemsList,
                         globalStock: $globalStock
                     )
 
                     // SECTION 3: Holiday Specials (Shared across locations)
                     StockSectionView(
-                        title: "🎃 Holiday Specials",
+                        title: "Holiday Specials",
                         items: holidayItemsList,
                         globalStock: $globalStock
                     )

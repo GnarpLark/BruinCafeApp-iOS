@@ -11,7 +11,23 @@ struct CartView: View {
     @Binding var selectedLocation: String
     @Binding var cartItems: [MenuItem: Int]
     @Binding var globalStock: [String: Int]
+    @Binding var rewardPunches: Int
+    @Binding var completedOrders: [PastOrder]
     @State private var showingLocationSheet = false
+
+    init(
+        selectedLocation: Binding<String>,
+        cartItems: Binding<[MenuItem: Int]>,
+        globalStock: Binding<[String: Int]>,
+        rewardPunches: Binding<Int> = .constant(1),
+        completedOrders: Binding<[PastOrder]> = .constant([])
+    ) {
+        self._selectedLocation = selectedLocation
+        self._cartItems = cartItems
+        self._globalStock = globalStock
+        self._rewardPunches = rewardPunches
+        self._completedOrders = completedOrders
+    }
 
     var body: some View {
         VStack(spacing: 15) {
@@ -99,7 +115,7 @@ struct CartView: View {
             }
 
             VStack(spacing: 12) {
-                NavigationLink(destination: OrderSimulationView(selectedLocation: $selectedLocation, cartItems: $cartItems, globalStock: $globalStock)) {
+                NavigationLink(destination: OrderSimulationView(selectedLocation: $selectedLocation, cartItems: $cartItems, globalStock: $globalStock, rewardPunches: $rewardPunches, completedOrders: $completedOrders)) {
                     Text("Proceed to Checkout")
                         .font(.headline)
                         .frame(maxWidth: .infinity)
@@ -111,7 +127,12 @@ struct CartView: View {
                 .disabled(cartItems.isEmpty)
 
                 // Returns to HomeView instead of standard menu
-                NavigationLink(destination: HomeView(selectedLocation: $selectedLocation)) {
+                NavigationLink(destination: HomeView(
+                    selectedLocation: $selectedLocation,
+                    globalStock: $globalStock,
+                    rewardPunches: $rewardPunches,
+                    completedOrders: $completedOrders
+                )) {
                     Text("Back to Home")
                         .font(.headline)
                         .frame(maxWidth: .infinity)
@@ -136,9 +157,18 @@ struct CartView_Previews: PreviewProvider {
             MenuItem(name: "HQ Signature Espresso", description: "Double shot dark roast", price: "$3.00", stockQuantity: 5): 2
         ]
         @State var mockStock: [String: Int] = ["HQ Signature Espresso": 5]
+        @State var mockPunches = 1
+        @State var mockOrders: [PastOrder] = []
+
         var body: some View {
             NavigationStack {
-                CartView(selectedLocation: $mockLocation, cartItems: $mockCart, globalStock: $mockStock)
+                CartView(
+                    selectedLocation: $mockLocation,
+                    cartItems: $mockCart,
+                    globalStock: $mockStock,
+                    rewardPunches: $mockPunches,
+                    completedOrders: $mockOrders
+                )
             }
         }
     }
@@ -146,3 +176,4 @@ struct CartView_Previews: PreviewProvider {
         PreviewWrapper()
     }
 }
+
