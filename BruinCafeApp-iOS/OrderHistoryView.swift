@@ -74,6 +74,7 @@ struct OrderHistoryView: View {
     
     // MARK: - State Properties
     @State private var showingLocationSheet = false
+    @State private var showAlert = false
 
     // MARK: - Initializer with Fallback Defaults
     init(
@@ -228,6 +229,8 @@ struct OrderHistoryView: View {
                                         let item = order.sampleItemToReorder
                                         let availableStock = globalStock[item.name] ?? item.stockQuantity
                                         
+                                       showAlert = true
+                                        
                                         if availableStock > 0 {
                                             globalStock[item.name, default: item.stockQuantity] -= 1
                                             cartItems[item, default: 0] += 1
@@ -243,6 +246,9 @@ struct OrderHistoryView: View {
                                             .cornerRadius(6)
                                     }
                                 }
+                            }
+                            .alert("Added Item to Cart", isPresented: self.$showAlert) {
+                                Button("OK", role: .cancel) {}
                             }
                             .padding()
                             .background(Color("CardBackground"))
