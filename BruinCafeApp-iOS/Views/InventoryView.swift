@@ -44,11 +44,9 @@ struct InventoryView: View {
 
     /// Default baseline inventory stock numbers mapped by unique item name.
     static let defaultInitialStock: [String: Int] = [
-        // HQ Cafe
         "HQ Signature Espresso": 12,
         "Breakfast Burrito": 8,
         "Iced Caramel Macchiato": 6,
-        // TC Cafe
         "Tech Center Special Roast": 10,
         "Bruin Bagel": 5,
         "Energy Smoothie": 3,
@@ -131,8 +129,8 @@ struct InventoryView: View {
     /// Daily lunch items dynamically resolved for the active location.
     var lunchItemsList: [String] {
         InventoryView.lunchDailyMenus(for: selectedLocation).map { $0.lunchTitle }
-    }
-
+    }*/
+     
     // MARK: - View Body
     var body: some View {
         VStack(spacing: 0) {

@@ -25,13 +25,13 @@ struct HomeView: View {
 
     // MARK: - Initializer with Default Fallbacks
     init(
-        //globalStock: Binding<[String: Int]> = .constant(InventoryView.defaultInitialStock),
-        invStore: Binding<InventoryStore>,
+        selectedLocation: Binding<String> = "Bruin Cafe HQ",
+        globalStock: Binding<[String: Int]> = .constant(InventoryView.defaultInitialStock),
         rewardPunches: Binding<Int> = .constant(1),
         completedOrders: Binding<[PastOrder]> = .constant([])
     ) {
-        self._selectedLocation = invStore.selectedLocation
-        self._globalStock = invStore.inventory
+        self._selectedLocation = selectedLocation
+        self._globalStock = globalStock
         self._rewardPunches = rewardPunches
         self._completedOrders = completedOrders
     }

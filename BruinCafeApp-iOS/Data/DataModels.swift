@@ -15,7 +15,7 @@ struct MenuItem: Identifiable, Hashable, Codable {
     let id: String
     let locationId: String
     let name: String
-    let description: String
+    let description: String?
     let course: Course
     let mealPeriod: String
     
@@ -43,7 +43,7 @@ struct Specialitem: Identifiable, Codable {
     let locationId: String
     let kind: String // "cafe" | "holiday"
     let name: String
-    let description: String
+    let description: String?
     let course: Course
     let activeFrom: String? // Date string
     let activeUntil: String? // Date string

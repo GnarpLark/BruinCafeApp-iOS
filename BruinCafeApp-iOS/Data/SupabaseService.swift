@@ -12,7 +12,8 @@ enum NetworkError: Error {
 }
 
 class SupabaseService {
-    private let baseURL = SupabaseConfig.url + "/rest/v1"
+    private let baseURL = SupabaseConfig.url + "/rest/v1/"
+    private let apiKey = SupabaseConfig.anonKey
     
     // MARK: - Request Helper
     private func performRequest<T: Decodable>(
@@ -26,8 +27,8 @@ class SupabaseService {
         
         var request = URLRequest(url: url)
         request.httpMethod = method
-        request.setValue(SupabaseConfig.anonKey, forHTTPHeaderField: "apikey")
-        request.setValue("Bearer \(SupabaseConfig.anonKey)", forHTTPHeaderField: "Authorization")
+        request.setValue(apiKey, forHTTPHeaderField: "apikey")
+        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         
@@ -40,6 +41,10 @@ class SupabaseService {
         guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
             throw NetworkError.requestFailed
         }
+        
+        // print("Data: \(data)")
+        
+        if data.isEmpty { return try JSONDecoder().decode(T.self, from: data) }
         
         return try JSONDecoder().decode(T.self, from: data)
     }
@@ -58,10 +63,10 @@ class SupabaseService {
         try await performRequest(path: "special_items?select=*", method: "GET")
     }
     
-    func upsertInventory(itemId: String, quantity: Int) async throws {
+    /*func upsertInventory(itemId: String, quantity: Int) async throws {
         let body = "{\"item_id\": \"\(itemId)\", \"quantity_on_hand\": \(quantity)}"
         let toDiscard: MenuItem? = try await performRequest(path: "inventory?on_conflict=item_id", method: "POST", body: body)
-    }
+    }*/
 }
 
 /*

@@ -8,9 +8,8 @@
 import Foundation
 import SwiftUI
 
-
 @Observable
-class InventoryStore {
+class CafeStore {
     var selectedLocation: String = "hq"
     var menuItems: [MenuItem] = []
     var specialItems: [Specialitem] = []
@@ -32,6 +31,9 @@ class InventoryStore {
             
             self.menuItems = loadedItems
             self.specialItems = loadedSpecials
+            
+            //print(menuItems)
+            //print(specialItems)
             
             // Convert the array to a Dictionary for easier access
             self.inventory = Dictionary(uniqueKeysWithValues: loadedStocks.map { ($0.id, $0.quantityOnHand) })
