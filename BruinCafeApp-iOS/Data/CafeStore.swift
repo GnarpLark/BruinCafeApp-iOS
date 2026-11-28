@@ -6,17 +6,97 @@
 //
 
 import Foundation
-import SwiftUI
+
+struct StaticStore {
+    let locations: [CafeLocation]
+    let mealPeriods: [MealPeriodDef]
+    let menuRows: [MenuRow]
+    let specialItems: [SpecialItem]
+}
 
 @Observable
 class CafeStore {
-    var selectedLocation: String = "hq"
+    private(set) public var staticValues: StaticStore = StaticStore(
+        locations: [],
+        mealPeriods: [],
+        menuRows: [],
+        specialItems: []
+    )
+    
+    public var rewardPunches: Int
+    public var inventory: [InventoryRow] = []
+    
+    public var selectedLocation: CafeLocation? = nil
+    public var cart: [MenuItem: Int] = [:]
+    
+    private(set) public var isLoading: Bool = false
+    private(set) public var isLoadedSuccesfully: Bool = false
+    
+    private let api = SupabaseApi()
+    
+    public init() {
+        // Will fetch `rewardPunches` from persistant storage
+        self.rewardPunches = 0
+    }
+    
+    @MainActor
+    func refreshData() async {
+        self.isLoading = true
+        do {
+            // Fetch everything in parallel
+            async let locations = api.fetchLocations()
+            async let mealPeriods = api.fetchMealPeriods()
+            async let menuRows = api.fetchMenuRows()
+            async let specialItems = api.fetchSpecialItems()
+            async let inventory = api.fetchInventory()
+            
+            let (
+                loadedLocations,
+                loadedMealPeriods,
+                loadedMenuRows,
+                loadedSpecialItems,
+                loadedInventory
+            ) = try await (
+                locations,
+                mealPeriods,
+                menuRows,
+                specialItems,
+                inventory
+            )
+            
+            self.staticValues = StaticStore(
+                locations: loadedLocations,
+                mealPeriods: loadedMealPeriods,
+                menuRows: loadedMenuRows,
+                specialItems: loadedSpecialItems
+            )
+            
+            self.inventory = loadedInventory
+            
+            // All data is successfully loaded!
+            self.isLoadedSuccesfully = true
+        } catch {
+            print("Failed to loaded data: \(error)")
+        }
+        
+        self.isLoading = false
+    }
+}
+
+/*@Observable
+public class CafeStore {
+    public var rewardPunches: Int
+    
+    public var selectedLocation: String = "hq"
     var menuItems: [MenuItem] = []
-    var specialItems: [Specialitem] = []
+    var specialItems: [SpecialItem] = []
     var inventory: [String: Int] = [:]
+    
     var isLoading: Bool = false
     
-    private let api = SupabaseService()
+    private let api = SupabaseApi()
+    
+    init() {}
     
     @MainActor
     func refreshData() async {
@@ -43,3 +123,4 @@ class CafeStore {
         self.isLoading = false
     }
 }
+*/

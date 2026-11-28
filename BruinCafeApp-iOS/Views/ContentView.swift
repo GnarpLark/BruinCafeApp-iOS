@@ -7,34 +7,37 @@
 
 import SwiftUI
 
-/// App Root View
-///
-/// Holds the primary `@State` properties for the application and injects persistent
-/// initial states from `OrderStore` (reward punches and order history) into `HomeView`.
 struct ContentView: View {
-    // MARK: - Root State Properties
-    /// Currently selected campus cafe location (defaults to HQ).
-    @State private var selectedLocation: String = "Bruin Cafe HQ"
+    @Environment(CafeStore.self) private var store
     
-    /// Global inventory stock counts across all locations, initialized from the central definition in `InventoryView`.
-    // @State private var globalStock: [String: Int] = InventoryView.defaultInitialStock
-    
-    /// User's current loyalty punch card progress, restored from persistent storage.
-    @State private var rewardPunches: Int = OrderStore.shared.loadPunches()
-    
-    /// Stored history of completed transactions, restored from local storage.
-    @State private var completedOrders: [PastOrder] = OrderStore.shared.loadOrders()*/
-    // MARK: - View Body
     var body: some View {
-        NavigationStack {
-            HomeView(invStore: invStore, rewardPunches: $rewardPunches, completedOrders: $completedOrders)
+        if store.isLoading {
+            Color.black.opacity(0.3)
+                .ignoresSafeArea()
+            
+            ProgressView("Loading...")
+                .padding()
+                .background(Color.white)
+                .cornerRadius(10)
+                .shadow(radius: 10)
+        }
+        
+        if !store.isLoading && store.isLoadedSuccesfully {
+            //print("The order data was loaded successfully!")
+            NavigationStack {
+                LocationView()
+            }
+        } else {
+            VStack {
+                Text("There was an issue loading the order data. Please try again.")
+                Button("Exit App") {
+                    exit(0)
+                }
+            }
         }
     }
 }
 
-// MARK: - Preview Provider
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-    }
+#Preview {
+    ContentView()
 }

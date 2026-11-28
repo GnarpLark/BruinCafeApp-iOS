@@ -10,13 +10,17 @@ import SwiftUI
 @main
 struct BruinCafeApp_iOSApp: App {
     
-    @State private var selectedLocation: String = "Bruin Cafe HQ"
+    @State private var store = CafeStore()
 
     var body: some Scene {
         WindowGroup {
             NavigationStack {
                 // Start on ContentView/HomeView so the app opens to the home screen!
                 ContentView()
+            }
+            .environment(store)
+            .task {
+                await store.refreshData()
             }
         }
     }
